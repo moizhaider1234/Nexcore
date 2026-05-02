@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXCORE — Future Hardware</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #030508;
+    --bg2: #060b12;
+    --bg3: #0a1220;
+    --surface: #0d1825;
+    --surface2: #111f30;
+    --border: rgba(0,200,255,0.12);
+    --border2: rgba(0,200,255,0.25);
+    --accent: #00c8ff;
+    --accent2: #0066ff;
+    --accent3: #7000ff;
+    --green: #00ff88;
+    --red: #ff3355;
+    --text: #e8f4ff;
+    --text2: #7a9bb5;
+    --text3: #3d6080;
+    --glow: 0 0 30px rgba(0,200,255,0.3);
+    --glow2: 0 0 60px rgba(0,200,255,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* SCANLINE */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { display: none; position: relative; z-index: 1; }
+  .page.active { display: block; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(3,5,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    cursor: pointer;
+    margin-right: 48px;
+    flex-shrink: 0;
+  }
+  .logo span { color: var(--text3); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+  }
+
+  .nav-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: var(--accent);
+    border-color: var(--border2);
+    background: rgba(0,200,255,0.06);
+  }
+
+  .nav-cats {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-left: 1px solid var(--border);
+    margin-left: 16px;
+    padding-left: 16px;
+  }
+
+  .cat-link {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px;
+    color: var(--text3);
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .cat-link:hover { color: var(--accent); background: rgba(0,200,255,0.05); }
+
+  .nav-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .cart-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+  }
+  .cart-btn:hover { background: #fff; box-shadow: var(--glow); }
+
+  .search-btn {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text2);
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .search-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── SECTIONS ─── */
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    top: 50%; right: 5%;
+    transform: translateY(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle at center, rgba(0,102,255,0.15) 0%, rgba(112,0,255,0.08) 40%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  .hero-orb2 {
+    position: absolute;
+    top: 20%; right: 15%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,200,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 6s ease-in-out infinite 1s;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-50%) scale(1.05); opacity: 1; }
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 700px; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    border: 1px solid var(--border2);
+    background: rgba(0,200,255,0.06);
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(42px, 6vw, 84px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 .line1 { color: var(--text); }
+  .hero h1 .line2 {
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text2);
+    max-width: 500px;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .hero-actions { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--accent);
+    padding: 16px 36px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .btn-primary:hover::before { transform: translateX(100%); }
+  .btn-primary:hover { background: #fff; box-shadow: var(--glow); }
+
+  .btn-ghost {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text2);
+    background: transparent;
+    padding: 16px 28px;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,200,255,0.05); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-top: 80px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--text3);
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* HERO PRODUCT FLOAT */
+  .hero-product-float {
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 420px;
+  }
+
+  .float-card {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 28px;
+    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), var(--glow2);
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+
+  .float-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 30px rgba(0,200,255,0.2));
+  }
+
+  .float-card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .float-card-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 24px;
+    color: var(--accent);
+    font-weight: 900;
+  }
+
+  .float-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--green);
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 3px 10px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+
+  /* ─── CATEGORIES BAR ─── */
+  .cats-section {
+    padding: 60px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cat-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+
+  .cat-card:hover::before { transform: scaleX(1); }
+  .cat-card:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .cat-icon { font-size: 32px; margin-bottom: 12px; }
+  .cat-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+  .cat-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 4px;
+  }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--text);
+  }
+
+  .see-all {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+    padding-bottom: 2px;
+  }
+  .see-all:hover { border-color: var(--accent); }
+
+  /* ─── PRODUCTS GRID ─── */
+  .products-section { padding: 80px 0; }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    group: true;
+  }
+
+  .product-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4), var(--glow2);
+  }
+
+  .product-img-wrap {
+    height: 200px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(0,200,255,0.08) 0%, transparent 70%);
+  }
+
+  .product-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    position: relative; z-index: 1;
+  }
+
+  .product-card:hover .product-img-wrap img { transform: scale(1.05); }
+
+  .prod-badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    z-index: 2;
+  }
+  .badge-new { background: rgba(0,200,255,0.2); color: var(--accent); border: 1px solid rgba(0,200,255,0.4); }
+  .badge-sale { background: rgba(255,51,85,0.2); color: var(--red); border: 1px solid rgba(255,51,85,0.4); }
+  .badge-hot { background: rgba(255,136,0,0.2); color: #ff8800; border: 1px solid rgba(255,136,0,0.4); }
+
+  .prod-wishlist {
+    position: absolute;
+    top: 12px; right: 12px;
+    width: 30px; height: 30px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s;
+  }
+  .prod-wishlist:hover { border-color: var(--red); background: rgba(255,51,85,0.1); }
+
+  .product-info { padding: 20px; }
+
+  .prod-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .prod-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .prod-desc {
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .prod-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .spec-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text3);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .prod-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .prod-price {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .price-main {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .price-old {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    text-decoration: line-through;
+  }
+
+  .add-cart {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--bg);
+    background: var(--accent);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-cart:hover { background: #fff; box-shadow: var(--glow); }
+
+  /* STAR RATING */
+  .prod-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+  .stars { color: #ffc400; font-size: 12px; }
+  .rating-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text3); }
+
+  /* ─── FEATURED / BANNER ─── */
+  .featured-section { padding: 0 0 80px; }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .featured-card {
+    border-radius: 16px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .featured-card:hover { transform: scale(1.01); }
+
+  .feat-1 { background: linear-gradient(135deg, #0a1220 0%, #0d2040 50%, #062040 100%); border: 1px solid rgba(0,100,255,0.3); }
+  .feat-2 { background: linear-gradient(135deg, #120a20 0%, #200d40 50%, #140620 100%); border: 1px solid rgba(112,0,255,0.3); }
+
+  .feat-bg-img {
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 55%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .feat-bg-img img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+    opacity: 0.9;
+  }
+
+  .feat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .feat-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    max-width: 260px;
+    line-height: 1.2;
+  }
+
+  .feat-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .feat-glow-1 {
+    position: absolute;
+    top: 20%; left: 40%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,102,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .feat-glow-2 {
+    position: absolute;
+    top: 20%; left: 40%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(112,0,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    background: var(--accent);
+    overflow: hidden;
+    padding: 10px 0;
+  }
+
+  .ticker {
+    display: flex;
+    animation: ticker 30s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--bg);
+    padding: 0 48px;
+    flex-shrink: 0;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ─── SPECS TABLE (Compare Page) ─── */
+  .compare-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  table.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .compare-table th {
+    background: var(--surface);
+    padding: 20px 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text2);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table th:first-child { color: var(--text3); font-size: 10px; }
+
+  .compare-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text2);
+    vertical-align: top;
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: rgba(0,200,255,0.02); }
+
+  .compare-table td:first-child {
+    color: var(--text3);
+    font-size: 11px;
+    letter-spacing: 1px;
+    width: 160px;
+  }
+
+  .spec-good { color: var(--green); }
+  .spec-bad { color: var(--red); }
+
+  .compare-head-img {
+    width: 100%; height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    margin-bottom: 12px;
+  }
+  .compare-head-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .compare-head-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 900;
+  }
+
+  /* ─── ABOUT ─── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    padding: 100px 0;
+  }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .about-main-rect {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 16px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-main-rect::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,200,255,0.1) 0%, transparent 70%);
+  }
+
+  .about-big-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 100px;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, rgba(0,200,255,0.3), rgba(0,102,255,0.1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .about-text {
+    font-size: 16px;
+    color: var(--text2);
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .value-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: all 0.3s;
+  }
+  .value-card:hover { border-color: var(--border2); background: var(--surface2); }
+
+  .value-icon { font-size: 24px; margin-bottom: 10px; }
+  .value-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .value-desc { font-size: 12px; color: var(--text3); line-height: 1.5; }
+
+  /* ─── SUPPORT ─── */
+  .support-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+
+  .support-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .support-card:hover {
+    border-color: var(--border2);
+    background: var(--surface2);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .support-icon { font-size: 36px; margin-bottom: 16px; }
+  .support-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .support-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    cursor: pointer;
+  }
+  .faq-q {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .faq-a { font-size: 13px; color: var(--text2); margin-top: 12px; line-height: 1.7; display: none; }
+  .faq-item.open .faq-a { display: block; }
+  .faq-arrow { color: var(--accent); font-size: 18px; transition: transform 0.2s; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+  /* ─── CONTACT FORM ─── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+  }
+
+  .form-row { margin-bottom: 20px; }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text3);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .form-input, .form-textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { height: 120px; resize: vertical; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--bg2);
+    padding: 60px 0 30px;
+    margin-top: 80px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 40px;
+  }
+
+  .footer-logo {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    margin-bottom: 16px;
+  }
+
+  .footer-desc { font-size: 13px; color: var(--text3); line-height: 1.7; margin-bottom: 24px; }
+
+  .footer-col-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .footer-link {
+    display: block;
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--accent); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  /* ─── PRODUCTS PAGE ─── */
+  .products-page-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    padding-top: 100px;
+    padding-bottom: 80px;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+  }
+
+  .filter-group { margin-bottom: 28px; }
+  .filter-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    color: var(--text2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .filter-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text3);
+    transition: color 0.2s;
+  }
+  .filter-opt:hover { color: var(--accent); }
+  .filter-check {
+    width: 14px; height: 14px;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    background: transparent;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    color: var(--accent);
+  }
+
+  .page-header-bar {
+    padding: 100px 0 40px;
+  }
+
+  .price-range-wrap {
+    position: relative;
+    padding: 10px 0;
+  }
+  .price-range-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 8px;
+  }
+  input[type=range] {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent) 60%, var(--border) 60%);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,200,255,0.5);
+  }
+
+  /* Notification toast */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 16px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: var(--green);
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* Responsive adjustments */
+  @media(max-width: 1100px) {
+    .products-grid { grid-template-columns: repeat(3, 1fr); }
+    .cats-grid { grid-template-columns: repeat(3, 1fr); }
+    .hero-product-float { display: none; }
+  }
+  @media(max-width: 768px) {
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .featured-grid, .about-grid, .contact-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .support-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+    .nav-cats { display: none; }
+  }
+
+  /* Page transition */
+  .page { animation: pagein 0.4s ease; }
+  @keyframes pagein {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Added to cart</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="showPage('home')">NEX<span>CORE</span></div>
+    <div class="nav-links">
+      <div class="nav-link active" onclick="navTo('home',this)">Home</div>
+      <div class="nav-link" onclick="navTo('products',this)">Products</div>
+      <div class="nav-link" onclick="navTo('compare',this)">Compare</div>
+      <div class="nav-link" onclick="navTo('about',this)">About</div>
+      <div class="nav-link" onclick="navTo('support',this)">Support</div>
+      <div class="nav-link" onclick="navTo('contact',this)">Contact</div>
+    </div>
+    <div class="nav-cats">
+      <div class="cat-link" onclick="filterAndShow('Desktops')">Desktops</div>
+      <div class="cat-link" onclick="filterAndShow('Laptops')">Laptops</div>
+      <div class="cat-link" onclick="filterAndShow('GPUs')">GPUs</div>
+      <div class="cat-link" onclick="filterAndShow('Monitors')">Monitors</div>
+      <div class="cat-link" onclick="filterAndShow('Accessories')">Accessories</div>
+    </div>
+    <div class="nav-right">
+      <div class="search-btn">🔍</div>
+      <button class="cart-btn" onclick="navTo('products', document.querySelector('.nav-link:nth-child(2)'))">CART [<span id="cart-count">0</span>]</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════ HOME PAGE ═══════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap" style="width:100%">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <div class="badge-dot"></div>
+          NEW 2025 LINEUP NOW AVAILABLE
+        </div>
+        <h1>
+          <div class="line1">BUILD YOUR</div>
+          <div class="line2">FUTURE</div>
+          <div class="line1">MACHINE</div>
+        </h1>
+        <p class="hero-desc">Premium PC hardware, laptops, and accessories engineered for the next generation. Performance without compromise.</p>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="navTo('products', document.querySelectorAll('.nav-link')[1])">EXPLORE PRODUCTS</button>
+          <button class="btn-ghost" onclick="navTo('compare', document.querySelectorAll('.nav-link')[2])">COMPARE SPECS →</button>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">500+</div>
+            <div class="stat-label">Products</div>
+          </div>
+          <div>
+            <div class="stat-num">98%</div>
+            <div class="stat-label">Satisfaction</div>
+          </div>
+          <div>
+            <div class="stat-num">24/7</div>
+            <div class="stat-label">Support</div>
+          </div>
+          <div>
+            <div class="stat-num">3yr</div>
+            <div class="stat-label">Warranty</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-orb"></div>
+    <div class="hero-orb2"></div>
+    <div class="hero-product-float">
+      <div class="float-card">
+        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&q=80" alt="Laptop">
+        <div class="float-badge">★ EDITOR'S CHOICE 2025</div>
+        <div class="float-card-title">ASUS ROG Zephyrus G16</div>
+        <div class="float-card-price">$2,199</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span class="ticker-item">FREE SHIPPING ON ORDERS OVER $99</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">RTX 5090 NOW IN STOCK</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">RYZEN 9 9950X BUILD KITS AVAILABLE</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">3-YEAR WARRANTY ON ALL SYSTEMS</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">FREE SHIPPING ON ORDERS OVER $99</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">RTX 5090 NOW IN STOCK</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">RYZEN 9 9950X BUILD KITS AVAILABLE</span>
+      <span class="ticker-item">·</span>
+      <span class="ticker-item">3-YEAR WARRANTY ON ALL SYSTEMS</span>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <section class="cats-section">
+    <div class="wrap">
+      <div class="cats-grid">
+        <div class="cat-card" onclick="filterAndShow('Desktops')">
+          <div class="cat-icon">🖥️</div>
+          <div class="cat-name">Desktops</div>
+          <div class="cat-count">48 products</div>
+        </div>
+        <div class="cat-card" onclick="filterAndShow('Laptops')">
+          <div class="cat-icon">💻</div>
+          <div class="cat-name">Laptops</div>
+          <div class="cat-count">62 products</div>
+        </div>
+        <div class="cat-card" onclick="filterAndShow('GPUs')">
+          <div class="cat-icon">🎮</div>
+          <div class="cat-name">Graphics</div>
+          <div class="cat-count">35 products</div>
+        </div>
+        <div class="cat-card" onclick="filterAndShow('Monitors')">
+          <div class="cat-icon">🖱️</div>
+          <div class="cat-name">Monitors</div>
+          <div class="cat-count">29 products</div>
+        </div>
+        <div class="cat-card" onclick="filterAndShow('Storage')">
+          <div class="cat-icon">💾</div>
+          <div class="cat-name">Storage</div>
+          <div class="cat-count">54 products</div>
+        </div>
+        <div class="cat-card" onclick="filterAndShow('Accessories')">
+          <div class="cat-icon">⌨️</div>
+          <div class="cat-name">Accessories</div>
+          <div class="cat-count">110 products</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED PRODUCTS -->
+  <section class="products-section">
+    <div class="wrap">
+      <div class="section-header">
+        <div>
+          <div class="section-label">// TRENDING NOW</div>
+          <div class="section-title">FEATURED HARDWARE</div>
+        </div>
+        <div class="see-all" onclick="navTo('products', document.querySelectorAll('.nav-link')[1])">VIEW ALL →</div>
+      </div>
+      <div class="products-grid" id="home-products"></div>
+    </div>
+  </section>
+
+  <!-- FEATURED BANNERS -->
+  <section class="featured-section">
+    <div class="wrap">
+      <div class="featured-grid">
+        <div class="featured-card feat-1" onclick="filterAndShow('Laptops')">
+          <div class="feat-glow-1"></div>
+          <div class="feat-bg-img">
+            <img src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80" alt="Gaming Laptop">
+          </div>
+          <div class="feat-label">// HOT DEAL — SAVE UP TO $400</div>
+          <div class="feat-title">Gaming Laptops RTX 50-Series</div>
+          <div class="feat-price">FROM $1,299</div>
+          <button class="btn-primary" style="width:fit-content">SHOP NOW</button>
+        </div>
+        <div class="featured-card feat-2" onclick="filterAndShow('Desktops')">
+          <div class="feat-glow-2"></div>
+          <div class="feat-bg-img">
+            <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400&q=80" alt="Desktop PC">
+          </div>
+          <div class="feat-label">// NEW ARRIVAL — AMD RYZEN 9</div>
+          <div class="feat-title">Custom Gaming Rigs Built to Order</div>
+          <div class="feat-price">FROM $1,799</div>
+          <button class="btn-primary" style="width:fit-content;background:var(--accent3)">CONFIGURE</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:40px 0">
+    <div class="wrap">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:32px;text-align:center">
+        <div>
+          <div style="font-size:28px;margin-bottom:8px">🚀</div>
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px">FAST SHIPPING</div>
+          <div style="font-size:12px;color:var(--text3)">Same-day dispatch on in-stock items</div>
+        </div>
+        <div>
+          <div style="font-size:28px;margin-bottom:8px">🔒</div>
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px">SECURE CHECKOUT</div>
+          <div style="font-size:12px;color:var(--text3)">256-bit encrypted transactions</div>
+        </div>
+        <div>
+          <div style="font-size:28px;margin-bottom:8px">🛡️</div>
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px">3-YEAR WARRANTY</div>
+          <div style="font-size:12px;color:var(--text3)">Full coverage on all systems</div>
+        </div>
+        <div>
+          <div style="font-size:28px;margin-bottom:8px">🔄</div>
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--text);letter-spacing:2px;margin-bottom:4px">30-DAY RETURNS</div>
+          <div style="font-size:12px;color:var(--text3)">No questions asked policy</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END HOME -->
+
+<!-- ═══════════ PRODUCTS PAGE ═══════════ -->
+<div class="page" id="page-products">
+  <div class="wrap">
+    <div class="products-page-layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="filter-group">
+          <div class="filter-title">Category</div>
+          <div class="filter-opt" onclick="setFilter('All')"><div class="filter-check" id="fc-all">✓</div>All Products</div>
+          <div class="filter-opt" onclick="setFilter('Desktops')"><div class="filter-check" id="fc-Desktops"></div>Desktops</div>
+          <div class="filter-opt" onclick="setFilter('Laptops')"><div class="filter-check" id="fc-Laptops"></div>Laptops</div>
+          <div class="filter-opt" onclick="setFilter('GPUs')"><div class="filter-check" id="fc-GPUs"></div>Graphics Cards</div>
+          <div class="filter-opt" onclick="setFilter('Monitors')"><div class="filter-check" id="fc-Monitors"></div>Monitors</div>
+          <div class="filter-opt" onclick="setFilter('Storage')"><div class="filter-check" id="fc-Storage"></div>Storage</div>
+          <div class="filter-opt" onclick="setFilter('Accessories')"><div class="filter-check" id="fc-Accessories"></div>Accessories</div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Price Range</div>
+          <div class="price-range-wrap">
+            <input type="range" min="0" max="5000" value="5000" id="price-range" oninput="updatePriceLabel(this.value)">
+            <div class="price-range-label">
+              <span>$0</span>
+              <span id="price-label">$5,000</span>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Brand</div>
+          <div class="filter-opt"><div class="filter-check"></div>ASUS ROG</div>
+          <div class="filter-opt"><div class="filter-check"></div>MSI</div>
+          <div class="filter-opt"><div class="filter-check"></div>Razer</div>
+          <div class="filter-opt"><div class="filter-check"></div>NVIDIA</div>
+          <div class="filter-opt"><div class="filter-check"></div>AMD</div>
+          <div class="filter-opt"><div class="filter-check"></div>Samsung</div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Sort By</div>
+          <select style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text2);padding:8px 12px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;outline:none">
+            <option>Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Newest First</option>
+            <option>Best Rated</option>
+          </select>
+        </div>
+      </aside>
+      <!-- PRODUCTS -->
+      <main>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+          <div>
+            <div class="section-label">// CATALOG</div>
+            <div class="section-title" id="prod-page-title">ALL PRODUCTS</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)" id="prod-count">Showing all products</div>
+        </div>
+        <div class="products-grid" id="all-products" style="grid-template-columns:repeat(3,1fr)"></div>
+      </main>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ COMPARE PAGE ═══════════ -->
+<div class="page" id="page-compare">
+  <div class="wrap" style="padding-top:100px;padding-bottom:80px">
+    <div class="section-label">// SIDE BY SIDE</div>
+    <div class="section-title" style="margin-bottom:40px">PRODUCT COMPARISON</div>
+    <div class="compare-table-wrap">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>
+              <img class="compare-head-img" src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&q=80" alt="">
+              <div class="compare-head-name">ASUS ROG Zephyrus G16</div>
+              <div class="compare-head-price">$2,199</div>
+            </th>
+            <th>
+              <img class="compare-head-img" src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" alt="">
+              <div class="compare-head-name">Razer Blade 16</div>
+              <div class="compare-head-price">$2,799</div>
+            </th>
+            <th>
+              <img class="compare-head-img" src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=300&q=80" alt="">
+              <div class="compare-head-name">MSI Titan GT77</div>
+              <div class="compare-head-price">$3,199</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Processor</td><td>AMD Ryzen 9 9955HX</td><td>Intel Core Ultra 9 275HX</td><td class="spec-good">Intel Core i9-14900HX</td></tr>
+          <tr><td>GPU</td><td>RTX 5080 16GB</td><td class="spec-good">RTX 5090 24GB</td><td>RTX 4090 16GB</td></tr>
+          <tr><td>RAM</td><td>32GB DDR5-5600</td><td class="spec-good">64GB DDR5-5600</td><td>32GB DDR5</td></tr>
+          <tr><td>Storage</td><td>2TB NVMe PCIe 5.0</td><td class="spec-good">4TB NVMe PCIe 5.0</td><td>2TB NVMe</td></tr>
+          <tr><td>Display</td><td>16" QHD+ 240Hz OLED</td><td class="spec-good">16" 4K 240Hz Mini-LED</td><td>17.3" QHD 240Hz IPS</td></tr>
+          <tr><td>Battery</td><td class="spec-good">90Wh / ~8hrs</td><td>80Wh / ~6hrs</td><td class="spec-bad">60Wh / ~4hrs</td></tr>
+          <tr><td>Weight</td><td class="spec-good">1.85 kg</td><td>2.14 kg</td><td class="spec-bad">3.1 kg</td></tr>
+          <tr><td>Cooling</td><td>Dual Fan + Vapor Chamber</td><td class="spec-good">Triple Fan System</td><td>Triple Fan System</td></tr>
+          <tr><td>Ports</td><td>TB4 × 2, USB-A × 3, HDMI 2.1</td><td class="spec-good">TB4 × 3, USB-A × 3, SD, HDMI 2.1</td><td>USB-A × 4, HDMI 2.1, TB4</td></tr>
+          <tr><td>Keyboard</td><td>Per-Key RGB, MX keys</td><td class="spec-good">Per-Key RGB, HyperSpeed</td><td>Per-Key RGB</td></tr>
+          <tr><td>OS</td><td>Windows 11 Pro</td><td>Windows 11 Pro</td><td>Windows 11 Pro</td></tr>
+          <tr><td>Warranty</td><td>2 Years</td><td>1 Year</td><td class="spec-good">3 Years</td></tr>
+          <tr>
+            <td></td>
+            <td><button class="add-cart" onclick="addToCart()" style="width:100%;padding:12px">ADD TO CART</button></td>
+            <td><button class="add-cart" onclick="addToCart()" style="width:100%;padding:12px">ADD TO CART</button></td>
+            <td><button class="add-cart" onclick="addToCart()" style="width:100%;padding:12px">ADD TO CART</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- GPU COMPARE -->
+    <div style="margin-top:60px">
+      <div class="section-label">// GPU SHOWDOWN</div>
+      <div class="section-title" style="margin-bottom:40px">RTX 5090 vs RX 9900 XT</div>
+      <div class="compare-table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>
+                <div style="font-size:32px;margin-bottom:12px">🟢</div>
+                <div class="compare-head-name">NVIDIA RTX 5090</div>
+                <div class="compare-head-price">$1,999</div>
+              </th>
+              <th>
+                <div style="font-size:32px;margin-bottom:12px">🔴</div>
+                <div class="compare-head-name">AMD RX 9900 XT</div>
+                <div class="compare-head-price">$999</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Architecture</td><td class="spec-good">Blackwell GB202</td><td>RDNA 4</td></tr>
+            <tr><td>VRAM</td><td class="spec-good">32GB GDDR7</td><td>24GB GDDR6</td></tr>
+            <tr><td>Memory BW</td><td class="spec-good">1,792 GB/s</td><td>960 GB/s</td></tr>
+            <tr><td>4K Gaming</td><td class="spec-good">200+ fps avg</td><td>140+ fps avg</td></tr>
+            <tr><td>Ray Tracing</td><td class="spec-good">Exceptional</td><td>Very Good</td></tr>
+            <tr><td>AI / DLSS</td><td class="spec-good">DLSS 4 (Multi Frame Gen)</td><td>FSR 4</td></tr>
+            <tr><td>TDP</td><td class="spec-bad">575W</td><td class="spec-good">330W</td></tr>
+            <tr><td>Value</td><td class="spec-bad">Premium</td><td class="spec-good">Excellent</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ ABOUT PAGE ═══════════ -->
+<div class="page" id="page-about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-main-rect">
+          <div class="about-big-num">09</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text3)">YEARS IN BUSINESS</div>
+          <div style="height:1px;background:var(--border);margin:24px 0"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+            <div>
+              <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--accent)">50K+</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3)">HAPPY CUSTOMERS</div>
+            </div>
+            <div>
+              <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--accent3)">500+</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3)">PRODUCTS</div>
+            </div>
+            <div>
+              <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--accent2)">25+</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3)">BRANDS</div>
+            </div>
+            <div>
+              <div style="font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--green)">98%</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3)">SATISFACTION</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">// WHO WE ARE</div>
+        <div class="section-title" style="margin-bottom:24px">NEXCORE WAS BUILT BY ENTHUSIASTS FOR ENTHUSIASTS</div>
+        <p class="about-text">Founded in 2016, NEXCORE started in a small garage with one mission: make cutting-edge PC hardware accessible to everyone. We believed that professional-grade performance shouldn't be locked behind an elite price tag.</p>
+        <p class="about-text">Today, we're one of the fastest-growing hardware retailers, partnering directly with top manufacturers to bring you the latest tech — from bleeding-edge GPUs to precision-engineered gaming laptops — at prices that make sense.</p>
+        <p class="about-text">Every product we stock is tested, benchmarked, and reviewed by our in-house team of hardware nerds before it hits the shelf. We don't just sell hardware. We live and breathe it.</p>
+        <button class="btn-primary" style="margin-top:16px" onclick="navTo('contact', document.querySelectorAll('.nav-link')[5])">GET IN TOUCH</button>
+      </div>
+    </div>
+    <div class="values-grid" style="margin-bottom:80px">
+      <div class="value-card">
+        <div class="value-icon">⚡</div>
+        <div class="value-title">PERFORMANCE FIRST</div>
+        <div class="value-desc">We only carry hardware that meets our strict performance benchmarks. No compromises, no filler products.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔬</div>
+        <div class="value-title">IN-HOUSE TESTING</div>
+        <div class="value-desc">Every product is rigorously tested by our expert team before listing. Real benchmarks, real results.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <div class="value-title">EXPERT SUPPORT</div>
+        <div class="value-desc">Our team of hardware specialists is available 24/7 to help you build the perfect setup for your needs.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🌍</div>
+        <div class="value-title">GLOBAL REACH</div>
+        <div class="value-desc">Shipping to 50+ countries with fast, reliable logistics. Your hardware arrives safely, on time, every time.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SUPPORT PAGE ═══════════ -->
+<div class="page" id="page-support">
+  <div class="wrap" style="padding-top:100px;padding-bottom:80px">
+    <div class="section-label">// HELP CENTER</div>
+    <div class="section-title" style="margin-bottom:48px">HOW CAN WE HELP?</div>
+
+    <div class="support-grid">
+      <div class="support-card">
+        <div class="support-icon">📦</div>
+        <div class="support-title">ORDERS & SHIPPING</div>
+        <div class="support-desc">Track your order, update shipping details, or get help with delivery issues.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer">TRACK ORDER →</div>
+      </div>
+      <div class="support-card">
+        <div class="support-icon">🔧</div>
+        <div class="support-title">WARRANTY & REPAIRS</div>
+        <div class="support-desc">Submit warranty claims, schedule repairs, or check the status of your existing service request.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer">FILE CLAIM →</div>
+      </div>
+      <div class="support-card">
+        <div class="support-icon">💬</div>
+        <div class="support-title">LIVE CHAT</div>
+        <div class="support-desc">Talk to a hardware specialist instantly. Available 24/7 for all technical queries and recommendations.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green);cursor:pointer">● ONLINE NOW →</div>
+      </div>
+      <div class="support-card">
+        <div class="support-icon">📖</div>
+        <div class="support-title">KNOWLEDGE BASE</div>
+        <div class="support-desc">Setup guides, driver downloads, compatibility charts, and in-depth product tutorials.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer">BROWSE DOCS →</div>
+      </div>
+      <div class="support-card">
+        <div class="support-icon">🔄</div>
+        <div class="support-title">RETURNS & REFUNDS</div>
+        <div class="support-desc">Easy 30-day return policy. Start a return online and get your refund processed within 48 hours.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer">START RETURN →</div>
+      </div>
+      <div class="support-card">
+        <div class="support-icon">🏗️</div>
+        <div class="support-title">BUILD ADVICE</div>
+        <div class="support-desc">Not sure what parts to buy? Our PC build advisors will help you pick the perfect components.</div>
+        <div style="margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer">GET ADVICE →</div>
+      </div>
+    </div>
+
+    <div style="margin-top:60px">
+      <div class="section-label">// FAQ</div>
+      <div class="section-title" style="margin-bottom:32px">FREQUENTLY ASKED</div>
+      <div id="faq-list">
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Do you offer price matching? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">Yes! We offer price matching on identical products from major authorized retailers. Contact our support team with a link to the lower price and we'll match it within 24 hours.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What is your return policy? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">We offer a hassle-free 30-day return policy on all products. Items must be in original packaging and unused condition. Once we receive the return, refunds are processed within 2-3 business days.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Do you ship internationally? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">Yes, we ship to 50+ countries worldwide. International shipping rates and delivery times vary by destination. Express shipping is available for most major countries.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Can I upgrade the specs on pre-built systems? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">Absolutely! All our pre-built systems are highly customizable. Use our Configure page or contact our build advisors who can tailor any system to your exact requirements and budget.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">How long does warranty service take? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">Most warranty repairs are completed within 5-7 business days. For critical components, we offer advance replacement — we ship you a replacement first while you return the defective unit.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Do you offer financing options? <span class="faq-arrow">⌄</span></div>
+          <div class="faq-a">Yes! We offer 0% interest financing for 12 months on orders over $500, and flexible payment plans for larger purchases. All financing is handled through our secure payment partners.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CONTACT PAGE ═══════════ -->
+<div class="page" id="page-contact">
+  <div class="wrap" style="padding-top:100px;padding-bottom:80px">
+    <div class="section-label">// GET IN TOUCH</div>
+    <div class="section-title" style="margin-bottom:48px">CONTACT US</div>
+    <div class="contact-grid">
+      <div>
+        <p style="font-size:16px;color:var(--text2);margin-bottom:32px;line-height:1.8">Have a question about a product? Need help with an order? Want expert advice on building your dream rig? We're here for it.</p>
+        <div class="form-row">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" placeholder="John Doe">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" placeholder="john@example.com">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-input" placeholder="Order #12345 / Product Inquiry">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Describe your issue or question..."></textarea>
+        </div>
+        <button class="btn-primary" onclick="showToast('Message sent! We\'ll get back to you within 24hrs.')">SEND MESSAGE</button>
+      </div>
+      <div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;margin-bottom:20px">
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:3px;color:var(--text2);margin-bottom:20px">CONTACT INFO</div>
+          <div style="margin-bottom:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">EMAIL</div>
+            <div style="font-size:14px;color:var(--accent)">support@nexcore.io</div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">PHONE</div>
+            <div style="font-size:14px;color:var(--text)">+1 (800) NEX-CORE</div>
+          </div>
+          <div style="margin-bottom:16px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">HOURS</div>
+            <div style="font-size:14px;color:var(--text)">24/7 Live Chat · Mon–Fri 9AM–8PM EST (Phone)</div>
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:4px">RESPONSE TIME</div>
+            <div style="font-size:14px;color:var(--green)">● Under 2 hours average</div>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px">
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:3px;color:var(--text2);margin-bottom:16px">FOLLOW US</div>
+          <div style="display:flex;gap:12px">
+            <div style="width:40px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">𝕏</div>
+            <div style="width:40px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">📸</div>
+            <div style="width:40px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">▶</div>
+            <div style="width:40px;height:40px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px">💼</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER (shared) ─── -->
+<footer id="main-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">NEX<span style="color:var(--text3)">CORE</span></div>
+        <p class="footer-desc">The premium destination for PC hardware, laptops, and accessories. Built for enthusiasts, trusted by professionals.</p>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:2px">CERTIFIED PARTNER · ASUS ROG · NVIDIA · AMD · RAZER · MSI</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Shop</div>
+        <div class="footer-link" onclick="filterAndShow('Desktops')">Desktops</div>
+        <div class="footer-link" onclick="filterAndShow('Laptops')">Laptops</div>
+        <div class="footer-link" onclick="filterAndShow('GPUs')">Graphics Cards</div>
+        <div class="footer-link" onclick="filterAndShow('Monitors')">Monitors</div>
+        <div class="footer-link" onclick="filterAndShow('Accessories')">Accessories</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-link" onclick="navTo('about', document.querySelectorAll('.nav-link')[3])">About Us</div>
+        <div class="footer-link" onclick="navTo('contact', document.querySelectorAll('.nav-link')[5])">Contact</div>
+        <div class="footer-link">Careers</div>
+        <div class="footer-link">Press</div>
+        <div class="footer-link">Blog</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <div class="footer-link" onclick="navTo('support', document.querySelectorAll('.nav-link')[4])">Help Center</div>
+        <div class="footer-link">Track Order</div>
+        <div class="footer-link">Returns</div>
+        <div class="footer-link">Warranty</div>
+        <div class="footer-link">Privacy Policy</div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2025 NEXCORE. All rights reserved.</div>
+      <div>Made for hardware enthusiasts worldwide.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── DATA ───
+const products = [
+  {
+    id:1, name:"ASUS ROG Zephyrus G16", category:"Laptops",
+    price:2199, oldPrice:2499,
+    badge:"new", rating:4.9, reviews:847,
+    img:"https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&q=80",
+    specs:["RTX 5080","Ryzen 9 9955HX","32GB DDR5","2TB NVMe"],
+    desc:"Ultra-thin gaming powerhouse with OLED display and the latest AMD + NVIDIA combo."
+  },
+  {
+    id:2, name:"Razer Blade 16 (2025)", category:"Laptops",
+    price:2799, oldPrice:3099,
+    badge:"hot", rating:4.8, reviews:612,
+    img:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&q=80",
+    specs:["RTX 5090","Core Ultra 9","64GB DDR5","4TB SSD"],
+    desc:"Premium craftsmanship meets extreme performance. The flagship gaming laptop of 2025."
+  },
+  {
+    id:3, name:"NVIDIA RTX 5090 FE", category:"GPUs",
+    price:1999, oldPrice:null,
+    badge:"new", rating:5.0, reviews:2340,
+    img:"https://images.unsplash.com/photo-1591488320449-011701bb6704?w=400&q=80",
+    specs:["32GB GDDR7","Blackwell","575W TDP","DLSS 4"],
+    desc:"The most powerful consumer GPU ever made. Redefines 4K and 8K gaming."
+  },
+  {
+    id:4, name:"Samsung Odyssey OLED G9", category:"Monitors",
+    price:1299, oldPrice:1499,
+    badge:"sale", rating:4.7, reviews:423,
+    img:"https://images.unsplash.com/photo-1527443224154-c4a573d778f9?w=400&q=80",
+    specs:["49\" Super Ultrawide","240Hz","0.03ms","QD-OLED"],
+    desc:"Immersive curved super ultrawide OLED monitor — the ultimate gaming display."
+  },
+  {
+    id:5, name:"NEXCORE Titan X Desktop", category:"Desktops",
+    price:3499, oldPrice:3999,
+    badge:"hot", rating:4.9, reviews:289,
+    img:"https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=400&q=80",
+    specs:["RTX 5090","Core i9-14900K","64GB DDR5","4TB NVMe"],
+    desc:"Our flagship pre-built gaming beast. Configured and tested by our team."
+  },
+  {
+    id:6, name:"AMD RX 9900 XT", category:"GPUs",
+    price:999, oldPrice:1099,
+    badge:"new", rating:4.6, reviews:1105,
+    img:"https://images.unsplash.com/photo-1560472355-109703aa3edc?w=400&q=80",
+    specs:["24GB GDDR6","RDNA 4","330W TDP","FSR 4"],
+    desc:"Exceptional value 4K GPU with AMD's latest RDNA 4 architecture."
+  },
+  {
+    id:7, name:"Samsung 990 Pro 4TB NVMe", category:"Storage",
+    price:299, oldPrice:349,
+    badge:"sale", rating:4.8, reviews:3102,
+    img:"https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&q=80",
+    specs:["4TB PCIe 5.0","7,450 MB/s","M.2 2280","5yr Warranty"],
+    desc:"Blazing fast PCIe 5.0 SSD with Samsung's V-NAND technology."
+  },
+  {
+    id:8, name:"Razer BlackWidow V4 Pro", category:"Accessories",
+    price:199, oldPrice:229,
+    badge:"sale", rating:4.7, reviews:876,
+    img:"https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=400&q=80",
+    specs:["Razer Green","Per-Key RGB","Wrist Rest","USB Passthrough"],
+    desc:"Mechanical gaming keyboard with Razer's legendary Green switches and full RGB."
+  },
+  {
+    id:9, name:"MSI Titan GT77 HX", category:"Laptops",
+    price:3199, oldPrice:3599,
+    badge:"hot", rating:4.6, reviews:198,
+    img:"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&q=80",
+    specs:["RTX 4090","Core i9-14900HX","32GB DDR5","2TB NVMe"],
+    desc:"Desktop-class performance in an imposing gaming laptop chassis."
+  },
+  {
+    id:10, name:"ASUS ROG Swift OLED PG32UCDM", category:"Monitors",
+    price:899, oldPrice:999,
+    badge:"new", rating:4.8, reviews:541,
+    img:"https://images.unsplash.com/photo-1593640408182-31c228b27e5c?w=400&q=80",
+    specs:["32\" 4K OLED","240Hz","0.03ms","USB-C 90W"],
+    desc:"32-inch 4K OLED gaming monitor with 240Hz for the smoothest gameplay."
+  },
+  {
+    id:11, name:"Logitech G Pro X Superlight 2", category:"Accessories",
+    price:159, oldPrice:null,
+    badge:"new", rating:4.9, reviews:2891,
+    img:"https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&q=80",
+    specs:["HERO 25K Sensor","60g Weight","Wireless","250hr Battery"],
+    desc:"The lightest wireless gaming mouse ever. Trusted by esports professionals worldwide."
+  },
+  {
+    id:12, name:"Intel Core i9-14900KS", category:"Accessories",
+    price:449, oldPrice:499,
+    badge:"sale", rating:4.7, reviews:1234,
+    img:"https://images.unsplash.com/photo-1555617981-dac3772e9647?w=400&q=80",
+    specs:["24 Cores","6.2GHz Boost","125W TDP","LGA1700"],
+    desc:"Intel's flagship desktop processor with record-breaking single-core performance."
+  }
+];
+
+let cartCount = 0;
+let activeFilter = 'All';
+
+// ─── RENDER ───
+function renderCard(p) {
+  const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating % 1 ? '½' : '');
+  const badgeMap = { new:'badge-new NEW', sale:'badge-sale SALE', hot:'badge-hot HOT' };
+  return `
+  <div class="product-card">
+    <div class="product-img-wrap">
+      ${p.badge ? `<div class="prod-badge ${badgeMap[p.badge].split(' ')[0]}">${badgeMap[p.badge].split(' ')[1]}</div>` : ''}
+      <div class="prod-wishlist">♡</div>
+      <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200/0d1825/00c8ff?text=NEXCORE'">
+    </div>
+    <div class="product-info">
+      <div class="prod-category">${p.category}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-rating"><span class="stars">${stars}</span><span class="rating-count">(${p.reviews.toLocaleString()})</span></div>
+      <div class="prod-desc">${p.desc}</div>
+      <div class="prod-specs">${p.specs.map(s=>`<span class="spec-tag">${s}</span>`).join('')}</div>
+      <div class="prod-footer">
+        <div class="prod-price">
+          <div class="price-main">$${p.price.toLocaleString()}</div>
+          ${p.oldPrice ? `<div class="price-old">$${p.oldPrice.toLocaleString()}</div>` : ''}
+        </div>
+        <button class="add-cart" onclick="addToCart(event)">+ ADD</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHome() {
+  const featured = products.slice(0,8);
+  document.getElementById('home-products').innerHTML = featured.map(renderCard).join('');
+}
+
+function renderAllProducts(filter='All') {
+  const filtered = filter === 'All' ? products : products.filter(p=>p.category===filter);
+  document.getElementById('all-products').innerHTML = filtered.map(renderCard).join('');
+  document.getElementById('prod-count').textContent = `Showing ${filtered.length} products`;
+  document.getElementById('prod-page-title').textContent = filter === 'All' ? 'ALL PRODUCTS' : filter.toUpperCase();
+}
+
+// ─── NAV ───
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  document.getElementById('main-footer').style.display = 'block';
+}
+
+function navTo(id, el) {
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  if(id==='products') renderAllProducts(activeFilter);
+  showPage(id);
+}
+
+function filterAndShow(cat) {
+  activeFilter = cat;
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.nav-link')[1].classList.add('active');
+  renderAllProducts(cat);
+  showPage('products');
+  setFilter(cat, false);
+}
+
+function setFilter(cat, rerender=true) {
+  activeFilter = cat;
+  document.querySelectorAll('[id^="fc-"]').forEach(el=>{el.textContent='';});
+  const el = document.getElementById('fc-'+cat);
+  if(el) el.textContent='✓';
+  if(rerender) renderAllProducts(cat);
+}
+
+function updatePriceLabel(v) {
+  document.getElementById('price-label').textContent = '$'+parseInt(v).toLocaleString();
+}
+
+// ─── CART ───
+function addToCart(e) {
+  if(e) e.stopPropagation();
+  cartCount++;
+  document.getElementById('cart-count').textContent = cartCount;
+  showToast('✓ Added to cart');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ─── FAQ ───
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+// ─── INIT ───
+renderHome();
+renderAllProducts();
+setFilter('All', false);
+</script>
+</body>
+</html>
